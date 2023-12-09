@@ -22,7 +22,6 @@ func main() {
 	r.Delete("/foo", func(w http.ResponseWriter, r *http.Request) {
 		cookie := http.Cookie{
 			Name:   "message",
-			Value:  "Hello, from cookies!",
 			MaxAge: -1,
 		}
 		http.SetCookie(w, &cookie)
@@ -31,6 +30,7 @@ func main() {
 		message, err := encryptMessage("Hello, encrypted from cookies!")
 		if err != nil {
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
 		}
 		cookie := http.Cookie{
 			Name:  "message",
@@ -50,7 +50,7 @@ func main() {
 			http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 			return
 		}
-		log.Println(message)
+		w.Write([]byte(message))
 	})
 	http.ListenAndServe("localhost:3000", r)
 }
